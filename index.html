@@ -229,7 +229,7 @@
                         <h3 class="font-bold text-slate-900 text-base">Trình Chỉnh Sửa Câu Hỏi & Đáp Án</h3>
                     </div>
                     <button onclick="addNewQuestion()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center transition-all">
-                        <i data-lucide="plus" class="w-4 h-4 mr-1.5"></i> Thêm Câu Hỏi
+                        <i data-lucide="plus" class="w-4 h-4 mr-1.5"></i> Thêm Câu Hỏi Xuống Cuối
                     </button>
                 </div>
 
@@ -673,7 +673,10 @@
                                 <option value="reorder" ${q.type === 'reorder' ? 'selected' : ''}>Sắp xếp câu/từ</option>
                                 <option value="essay" ${q.type === 'essay' ? 'selected' : ''}>Tự luận / Viết lại câu</option>
                             </select>
-                            <button onclick="deleteQuestion(${qIndex})" class="text-slate-400 hover:text-red-500 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="duplicateQuestion(${qIndex})" title="Nhân bản câu hỏi này" class="text-slate-500 hover:text-indigo-600 p-1 rounded hover:bg-slate-200/60 transition-all flex items-center gap-1 text-xs font-bold">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteQuestion(${qIndex})" title="Xóa câu hỏi" class="text-slate-400 hover:text-red-500 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
 
@@ -714,6 +717,12 @@
                             </div>
                         </div>
                     ` : ''}
+
+                    <div class="pt-2 flex justify-end border-t border-slate-200/60">
+                        <button onclick="insertQuestionAfter(${qIndex})" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all">
+                            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Chèn câu hỏi kế dưới
+                        </button>
+                    </div>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -727,6 +736,27 @@
 
         function addNewQuestion() {
             questionsData.push({ question: `Câu ${questionsData.length + 1}: `, type: 'mcq', options: ["A. ", "B. ", "C. ", "D. "], correctIndex: 0, points: 1, mediaUrl: "", mediaType: "none" });
+            renderEditor();
+        }
+
+        function insertQuestionAfter(qIndex) {
+            const newQ = { 
+                question: `Câu ${qIndex + 2}: `, 
+                type: 'mcq', 
+                options: ["A. ", "B. ", "C. ", "D. "], 
+                correctIndex: 0, 
+                points: 1, 
+                mediaUrl: "", 
+                mediaType: "none" 
+            };
+            questionsData.splice(qIndex + 1, 0, newQ);
+            renderEditor();
+        }
+
+        function duplicateQuestion(qIndex) {
+            const target = questionsData[qIndex];
+            const cloned = JSON.parse(JSON.stringify(target));
+            questionsData.splice(qIndex + 1, 0, cloned);
             renderEditor();
         }
 
